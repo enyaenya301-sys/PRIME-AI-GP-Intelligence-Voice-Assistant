@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080a0e">
+<title>PRIME AI | GP Intelligence</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080a0e;color:#f5f2eb;font-family:Arial,sans-serif;min-height:100vh}
+header{display:flex;align-items:center;gap:12px;padding:18px;border-bottom:1px solid #34302a}
+.logo{width:45px;height:45px;border:2px solid #d6b66b;border-radius:14px;display:grid;place-items:center;color:#e7c779;font-size:22px;font-weight:bold}
+.brand{font-size:19px;font-weight:bold;letter-spacing:2px}
+.sub{font-size:10px;color:#c7aa6c;letter-spacing:3px;margin-top:4px}
+.status{margin-left:auto;color:#9acb9c;font-size:11px}
+main{max-width:650px;margin:auto;padding:22px 16px}
+.hero{text-align:center;padding:38px 10px 25px}
+.shield{width:115px;height:115px;margin:auto;border:2px solid #d7b66b;border-radius:35px 35px 48px 48px;display:grid;place-items:center;box-shadow:0 0 35px #c49b3d25;color:#e8c779;font-size:38px;font-weight:bold;animation:glow 3s infinite}
+@keyframes glow{50%{box-shadow:0 0 45px #d6b66b55}}
+.hero h1{font-size:27px;letter-spacing:4px;margin:22px 0 8px}
+.gold{color:#d9b66b}
+.hero p{color:#96969b;font-size:13px}
+.panel{background:#11151d;border:1px solid #34302a;border-radius:17px;padding:16px;margin-top:15px}
+.panel-title{font-size:12px;color:#d8b96f;letter-spacing:2px}
+#chat{height:300px;overflow-y:auto;margin-top:15px}
+.msg{padding:12px 14px;border-radius:13px;margin:10px 0;font-size:14px;line-height:1.6;white-space:pre-wrap}
+.bot{background:#1b202a;border:1px solid #34302a}
+.user{background:#473b26;margin-left:35px}
+.inputrow{display:flex;gap:8px;margin-top:12px}
+input{min-width:0;flex:1;background:#080b11;border:1px solid #494235;border-radius:12px;padding:14px;color:white;font-size:14px;outline:none}
+button{border:0;border-radius:12px;background:#d5b46b;color:#111;padding:12px 16px;font-weight:bold}
+.mic{background:#252a33;color:#e6c778;border:1px solid #65532f}
+.voice{text-align:center;padding:20px}
+.voice button{width:75px;height:75px;border-radius:50%;font-size:26px;border:2px solid #e2c478}
+.voice p{color:#aaa;font-size:12px}
+footer{text-align:center;padding:25px;color:#686a70;font-size:10px;letter-spacing:2px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">GP</div>
+<div>
+<div class="brand">PRIME AI</div>
+<div class="sub">GP INTELLIGENCE</div>
+</div>
+<div class="status">● ONLINE</div>
+</header>
+
+<main>
+<section class="hero">
+<div class="shield">GP</div>
+<h1>PRIME <span class="gold">AI</span></h1>
+<p>Your intelligent personal assistant.</p>
+</section>
+
+<section class="panel">
+<div class="panel-title">PRIME CONVERSATION</div>
+<div id="chat">
+<div class="msg bot">Hello. I am PRIME AI, your intelligent assistant.
+
+I am ready to assist you. How may I help you today?</div>
+</div>
+<div class="inputrow">
+<input id="message" placeholder="Message PRIME AI...">
+<button onclick="sendMessage()">SEND</button>
+</div>
+</section>
+
+<section class="panel voice">
+<div class="panel-title">VOICE ASSISTANT</div>
+<button class="mic" onclick="listen()">🎙</button>
+<p id="voiceStatus">Tap the microphone to speak to PRIME AI.</p>
+<button class="mic" onclick="stopVoice()">STOP VOICE</button>
+</section>
+</main>
+
+<footer>PRIME AI · GP INTELLIGENCE · PROTOTYPE 01</footer>
+
+<script>
+const chat=document.getElementById("chat");
+const input=document.getElementById("message");
+const statusText=document.getElementById("voiceStatus");
+
+function addMessage(text,type){
+const div=document.createElement("div");
+div.className="msg "+type;
+div.textContent=text;
+chat.appendChild(div);
+chat.scrollTop=chat.scrollHeight;
+}
+
+function reply(text){
+const q=text.toLowerCase();
+let answer;
+
+if(q.includes("hello")||q.includes("hi")){
+answer="Greetings. I am PRIME AI. How can I assist you?";
+}else if(q.includes("your name")){
+answer="My name is PRIME AI, powered by the GP Intelligence vision.";
+}else if(q.includes("who created")||q.includes("creator")){
+answer="I am the PRIME AI project, developed under the GP Intelligence vision.";
+}else if(q.includes("time")){
+answer="Your device time is "+new Date().toLocaleTimeString()+".";
+}else if(q.includes("date")){
+answer="Today's date is "+new Date().toLocaleDateString()+".";
+}else if(q.includes("help")){
+answer="I can help with questions, ideas, writing and everyday tasks. My full AI intelligence connection is still to be developed.";
+}else{
+answer="I have received your message: "+text+"\n\nI am currently running Prototype 01. My full AI intelligence engine will be connected in a later development stage.";
+}
+addMessage(answer,"bot");
+speak(answer);
+}
+
+function sendMessage(){
+const text=input.value.trim();
+if(!text)return;
+addMessage(text,"user");
+input.value="";
+reply(text);
+}
+
+input.addEventListener("keydown",e=>{
+if(e.key==="Enter")sendMessage();
+});
+
+function speak(text){
+if(!("speechSynthesis" in window))return;
+speechSynthesis.cancel();
+const speech=new SpeechSynthesisUtterance(text);
+speech.lang="en-US";
+speech.rate=0.9;
+speech.pitch=0.8;
+speechSynthesis.speak(speech);
+}
+
+function listen(){
+const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!Speech){
+statusText.textContent="Voice recognition is not supported in this browser. Try Chrome.";
+return;
+}
+const recognition=new Speech();
+recognition.lang="en-US";
+recognition.interimResults=false;
+recognition.onstart=()=>statusText.textContent="PRIME AI is listening...";
+recognition.onresult=e=>{
+input.value=e.results[0][0].transcript;
+statusText.textContent="Voice received.";
+sendMessage();
+};
+recognition.onerror=()=>statusText.textContent="Microphone error. Please try again.";
+recognition.start();
+}
+
+function stopVoice(){
+if("speechSynthesis" in window)speechSynthesis.cancel();
+statusText.textContent="Voice output stopped.";
+}
+</script>
+</body>
+  </html>
+  
