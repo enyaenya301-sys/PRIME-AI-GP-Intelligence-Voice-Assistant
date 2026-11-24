@@ -89,29 +89,56 @@ div.textContent=text;
 chat.appendChild(div);
 chat.scrollTop=chat.scrollHeight;
 }
+let isSending = false;
 
-function reply(text){
-const q=text.toLowerCase();
-let answer;
+async function sendMessage() {
+  const text = input.value.trim();
 
-if(q.includes("hello")||q.includes("hi")){
-answer="Greetings. I am PRIME AI. How can I assist you?";
-}else if(q.includes("your name")){
-answer="My name is PRIME AI, powered by the GP Intelligence vision.";
-}else if(q.includes("who created")||q.includes("creator")){
-answer="I am the PRIME AI project, developed under the GP Intelligence vision.";
-}else if(q.includes("time")){
-answer="Your device time is "+new Date().toLocaleTimeString()+".";
-}else if(q.includes("date")){
-answer="Today's date is "+new Date().toLocaleDateString()+".";
-}else if(q.includes("help")){
-answer="I can help with questions, ideas, writing and everyday tasks. My full AI intelligence connection is still to be developed.";
-}else{
-answer="I have received your message: "+text+"\n\nI am currently running Prototype 01. My full AI intelligence engine will be connected in a later development stage.";
+  if (!text || isSending) return;
+
+  addMessage(text, "user");
+  input.value = "";
+  isSending = true;
+
+  const thinking = document.createElement("div");
+  thinking.className = "msg bot";
+  thinking.textContent = "PRIME AI is thinking...";
+  chat.appendChild(thinking);
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI connection failed.");
+    }
+
+    const answer = data.reply || "I could not generate a response.";
+
+    addMessage(answer, "bot");
+    speak(answer);
+
+  } catch (error) {
+    addMessage(
+      "Sorry, I could not connect to PRIME AI. " + error.message,
+      "bot"
+    );
+
+  } finally {
+    thinking.remove();
+    isSending = false;
+  }
 }
-addMessage(answer,"bot");
-speak(answer);
-}
+
 
 function sendMessage(){
 const text=input.value.trim();
