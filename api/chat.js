@@ -6,7 +6,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = (process.env.OPENAI_API_KEY || "").replace(/[^\x21-\x7E]/g, "");
 
   if (!apiKey) {
     return res.status(500).json({
