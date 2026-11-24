@@ -10,12 +10,18 @@ module.exports = async function handler(req, res) {
 
   if (!apiKey) {
     return res.status(500).json({
-      error: "AI connection is not configured yet."
+      error: "OPENAI_API_KEY is missing in Vercel."
     });
   }
 
   try {
-    const { message } = req.body || {};
+    let body = req.body || {};
+
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
+
+    const message = body.message;
 
     if (!message || typeof message !== "string") {
       return res.status(400).json({
@@ -34,7 +40,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           model: "gpt-4.1-mini",
           instructions:
-            "You are PRIME AI, the intelligent personal assistant created by GP Intelligence. Be professional, helpful, respectful and clear. Your voice and personality are serious, calm and confident.",
+            "You are PRIME AI, created by GP Intelligence. You are a helpful, intelligent assistant. Answer questions clearly, accurately and naturally. Help with education, science, technology, business, mathematics and everyday conversations.",
           input: message
         })
       }
@@ -43,8 +49,10 @@ module.exports = async function handler(req, res) {
     const data = await aiResponse.json();
 
     if (!aiResponse.ok) {
+      console.error("OpenAI error:", data);
+
       return res.status(aiResponse.status).json({
-        error: data.error?.message || "AI service error."
+        error: data.error?.message || "OpenAI request failed."
       });
     }
 
@@ -53,9 +61,10 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (error) {
+    console.error("PRIME AI server error:", error);
+
     return res.status(500).json({
-      error: "Something went wrong connecting to PRIME AI."
+      error: "Server error: " + error.message
     });
   }
 };
-  
